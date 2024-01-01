@@ -19,13 +19,15 @@ internal fun resolveJs(
     typeParameterResolver: TypeParameterResolver,
     superClassName: TypeName,
 ) {
+    val nearestAnnotation = symbol.nearestAnnotation
     val asyncTypeBuilder: TypeSpec.Builder? = generateReversalTypeSpecBuilder(
         typeParameterResolver = typeParameterResolver,
         superClassName = superClassName,
         environment = environment,
         symbol = symbol,
-        isEnabled = symbol.nearestAnnotation.jsAsync,
-        classNamePrefix = "JsAsync"
+        isEnabled = nearestAnnotation.jsAsync,
+        classNamePrefix = nearestAnnotation.jsAsyncClassNamePrefix,
+        classNameSuffix = nearestAnnotation.jsAsyncClassNameSuffix
     )
 
     // all suspend abstract fun
@@ -33,7 +35,6 @@ internal fun resolveJs(
         .filterIsInstance<KSFunctionDeclaration>()
         .filter { it.isAbstract && Modifier.SUSPEND in it.modifiers }
         .forEach { abstractSuspendFunction ->
-            environment.logger.info("abstractSuspendFunction: $abstractSuspendFunction")
             if (asyncTypeBuilder != null) {
                 val (asyncFun, overriddenFun) = generateAsyncFunctions(
                     symbol,
@@ -53,6 +54,9 @@ private fun generateAsyncFunctions(
     typeParameterResolver: TypeParameterResolver,
     abstractSuspendFunction: KSFunctionDeclaration
 ): GeneratedReversalFunctions {
+    val abstractSuspendFunctionName = abstractSuspendFunction.simpleName.asString()
+    val funName = abstractSuspendFunctionName + "Async"
+
     val funcParameterResolver = abstractSuspendFunction.typeParameters.toTypeParameterResolver(typeParameterResolver)
 
     val modifiers = abstractSuspendFunction.modifiers.mapNotNull { it.toKModifier() }
@@ -71,14 +75,24 @@ private fun generateAsyncFunctions(
         ).build()
     }
 
-    val abstractSuspendFunctionName = abstractSuspendFunction.simpleName.asString()
-    val abstractAsyncFunction = FunSpec.builder(abstractSuspendFunctionName + "Async").apply {
+    val override = shouldOverride(
+        annotationInfo.declaration,
+        funName,
+        abstractSuspendFunction.extensionReceiver,
+        abstractSuspendFunction.parameters
+    )
+
+
+    val abstractAsyncFunction = FunSpec.builder(funName).apply {
         // doc
         addKdoc("Async reversal function for [%N]", abstractSuspendFunctionName)
 
         val modifiers0 = modifiers.toMutableSet()
         modifiers0.remove(KModifier.SUSPEND)
         modifiers0.add(KModifier.ABSTRACT)
+        if (override) {
+            modifiers0.add(KModifier.OVERRIDE)
+        }
 
         addModifiers(modifiers0)
         addTypeVariables(typeVariables)

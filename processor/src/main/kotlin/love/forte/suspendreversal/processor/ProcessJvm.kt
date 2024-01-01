@@ -19,13 +19,15 @@ internal fun resolveJvm(
     typeParameterResolver: TypeParameterResolver,
     superClassName: TypeName,
 ) {
+    val nearestAnnotation = symbol.nearestAnnotation
     val blockingTypeBuilder: TypeSpec.Builder? = generateReversalTypeSpecBuilder(
         typeParameterResolver = typeParameterResolver,
         superClassName = superClassName,
         environment = environment,
         symbol = symbol,
-        isEnabled = symbol.nearestAnnotation.javaBlocking,
-        classNamePrefix = "JBlocking"
+        isEnabled = nearestAnnotation.jBlocking,
+        classNamePrefix = nearestAnnotation.jBlockingClassNamePrefix,
+        classNameSuffix = nearestAnnotation.jBlockingClassNameSuffix
     )
 
     val asyncTypeBuilder: TypeSpec.Builder? = generateReversalTypeSpecBuilder(
@@ -33,8 +35,9 @@ internal fun resolveJvm(
         superClassName = superClassName,
         environment = environment,
         symbol = symbol,
-        isEnabled = symbol.nearestAnnotation.javaAsync,
-        classNamePrefix = "JAsync"
+        isEnabled = nearestAnnotation.jAsync,
+        classNamePrefix = nearestAnnotation.jAsyncClassNamePrefix,
+        classNameSuffix = nearestAnnotation.jAsyncClassNameSuffix,
     )
 
     // all suspend abstract fun
@@ -42,7 +45,6 @@ internal fun resolveJvm(
         .filterIsInstance<KSFunctionDeclaration>()
         .filter { it.isAbstract && Modifier.SUSPEND in it.modifiers }
         .forEach { abstractSuspendFunction ->
-            environment.logger.info("abstractSuspendFunction: $abstractSuspendFunction")
             if (blockingTypeBuilder != null) {
                 val (blockingFun, overriddenFun) = generateBlockingFunctions(
                     symbol,
@@ -74,6 +76,8 @@ private fun generateBlockingFunctions(
     typeParameterResolver: TypeParameterResolver,
     abstractSuspendFunction: KSFunctionDeclaration
 ): GeneratedReversalFunctions {
+    val abstractSuspendFunctionName = abstractSuspendFunction.simpleName.asString()
+    val funName = abstractSuspendFunctionName + "Blocking" // TODO from annotation
     val funcParameterResolver = abstractSuspendFunction.typeParameters.toTypeParameterResolver(typeParameterResolver)
 
     val modifiers = abstractSuspendFunction.modifiers.mapNotNull { it.toKModifier() }
@@ -93,14 +97,27 @@ private fun generateBlockingFunctions(
         ).build()
     }
 
-    val abstractSuspendFunctionName = abstractSuspendFunction.simpleName.asString()
-    val abstractBlockingFunction = FunSpec.builder(abstractSuspendFunctionName + "Blocking").apply {
+    val override = shouldOverride(
+        annotationInfo.declaration,
+        funName,
+        abstractSuspendFunction.extensionReceiver,
+        abstractSuspendFunction.parameters
+    )
+
+    val abstractBlockingFunction = FunSpec.builder(funName).apply {
         // doc
-        addKdoc("Blocking reversal function for [%N]\n\n @see %N", abstractSuspendFunctionName, abstractSuspendFunctionName)
+        addKdoc(
+            "Blocking reversal function for [%N]\n\n @see %N",
+            abstractSuspendFunctionName,
+            abstractSuspendFunctionName
+        )
 
         val modifiers0 = modifiers.toMutableSet()
         modifiers0.remove(KModifier.SUSPEND)
         modifiers0.add(KModifier.ABSTRACT)
+        if (override) {
+            modifiers0.add(KModifier.OVERRIDE)
+        }
 
         addModifiers(modifiers0)
         addTypeVariables(typeVariables)
@@ -160,6 +177,8 @@ private fun generateAsyncFunctions(
     typeParameterResolver: TypeParameterResolver,
     abstractSuspendFunction: KSFunctionDeclaration
 ): GeneratedReversalFunctions {
+    val abstractSuspendFunctionName = abstractSuspendFunction.simpleName.asString()
+    val funName = abstractSuspendFunctionName + "Async"
     val funcParameterResolver = abstractSuspendFunction.typeParameters.toTypeParameterResolver(typeParameterResolver)
 
     val modifiers = abstractSuspendFunction.modifiers.mapNotNull { it.toKModifier() }
@@ -177,16 +196,27 @@ private fun generateAsyncFunctions(
             modifiers = modifiers0
         ).build()
     }
+    val override = shouldOverride(
+        annotationInfo.declaration,
+        funName,
+        abstractSuspendFunction.extensionReceiver,
+        abstractSuspendFunction.parameters
+    )
 
-    val abstractSuspendFunctionName = abstractSuspendFunction.simpleName.asString()
-    val abstractAsyncFunction = FunSpec.builder(abstractSuspendFunctionName + "Async").apply {
+    val abstractAsyncFunction = FunSpec.builder(funName).apply {
         // doc
-        addKdoc("Async reversal function for [%N]\n\n @see %N", abstractSuspendFunctionName, abstractSuspendFunctionName)
+        addKdoc(
+            "Async reversal function for [%N]\n\n @see %N",
+            abstractSuspendFunctionName,
+            abstractSuspendFunctionName
+        )
 
         val modifiers0 = modifiers.toMutableSet()
         modifiers0.remove(KModifier.SUSPEND)
         modifiers0.add(KModifier.ABSTRACT)
-
+        if (override) {
+            modifiers0.add(KModifier.OVERRIDE)
+        }
 
         addModifiers(modifiers0)
         addTypeVariables(typeVariables)

@@ -156,3 +156,34 @@ interface Foo {
 > [!note]
 > If `SuspendReversal.markJvmSynthetic = true`, 
 > then `@JvmSynthetic` must (or is strongly recommended) be added to the suspend function.
+
+
+## Cautions
+
+1. The processor will only handle the **abstract suspend** function.
+
+2. In Java, functions with a return value of `Unit` are treated as `CompletableFuture<Void?>`
+
+3. Will copy the annotations `@kotlin.Throws` and `@kotlin.jvm.Throws`.
+
+4. Will **roughly** calculate whether the generated function needs to be inherited or not.
+
+e.g.
+```kotlin
+interface Foo {
+    suspend fun run()
+    fun runBlocking() { /*...*/ }
+}
+
+// Generated 👇
+
+interface JBlockingFoo : Foo {
+    override fun runBlocking() // Will be marked `override`
+    suspend fun run() {
+        runBlocking()
+    }
+}
+```
+
+> [!warning]
+> The judgment is very rough and not very reliable.

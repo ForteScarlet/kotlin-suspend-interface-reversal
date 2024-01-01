@@ -43,6 +43,9 @@ abstract class S2<T, out R, in I, V : Number>(val name: String) {
     @JvmSynthetic
     @Throws(Exception::class)
     abstract suspend fun run()
+
+    open fun runBlocking() {}
+
     @JvmSynthetic
     abstract suspend fun get(): String
 }

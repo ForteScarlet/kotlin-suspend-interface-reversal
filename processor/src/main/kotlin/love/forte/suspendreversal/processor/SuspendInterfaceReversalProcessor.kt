@@ -1,8 +1,6 @@
 package love.forte.suspendreversal.processor
 
-import com.google.devtools.ksp.KspExperimental
-import com.google.devtools.ksp.getAnnotationsByType
-import com.google.devtools.ksp.isAbstract
+import com.google.devtools.ksp.*
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import com.squareup.kotlinpoet.*
@@ -180,6 +178,7 @@ internal fun generateReversalTypeSpecBuilder(
     symbol: AnnotationAndClassDeclaration,
     isEnabled: Boolean,
     classNamePrefix: String,
+    classNameSuffix: String,
 ): TypeSpec.Builder? {
     val declaration = symbol.declaration
     val declarationName = declaration.simpleName.asString()
@@ -187,9 +186,9 @@ internal fun generateReversalTypeSpecBuilder(
     val builder: TypeSpec.Builder = if (isEnabled) {
         when (declaration.classKind) {
             ClassKind.CLASS -> {
-                environment.logger.info("CLASS declaration: $declaration")
+                val className = classNamePrefix + declaration.simpleName.asString() + classNameSuffix
 
-                TypeSpec.classBuilder(classNamePrefix + declaration.simpleName.asString())
+                TypeSpec.classBuilder(className)
                     .apply {
                         superclass(superClassName)
                         // build primary constructor
@@ -241,7 +240,8 @@ internal fun generateReversalTypeSpecBuilder(
         """
         Generated suspend reversal type for [%N].
         @see %N
-    """.trimIndent(), declarationName, declarationName)
+    """.trimIndent(), declarationName, declarationName
+    )
 
 
     return builder
@@ -252,12 +252,16 @@ internal data class GeneratedReversalFunctions(
     val overriddenSuspendFunction: FunSpec
 )
 
-internal fun KSType.resolveClassDeclarationToClassName(): ClassName? {
+internal fun KSType.resolveClassDeclaration(): KSClassDeclaration? {
     return when (val declaration = declaration) {
-        is KSClassDeclaration -> declaration.toClassName()
-        is KSTypeAlias -> declaration.type.resolve().resolveClassDeclarationToClassName()
+        is KSClassDeclaration -> declaration
+        is KSTypeAlias -> declaration.findActualType()
         else -> return null
     }
+}
+
+internal fun KSType.resolveClassDeclarationToClassName(): ClassName? {
+    return resolveClassDeclaration()?.toClassName()
 }
 
 /**
@@ -275,4 +279,38 @@ internal fun resolveIncludeAnnotations(builder: FunSpec.Builder, source: KSFunct
         builder.addAnnotation(it.toAnnotationSpec())
     }
 
+}
+
+/**
+ * 粗略的判断是否需要标记继承
+ */
+internal fun shouldOverride(
+    declaration: KSClassDeclaration,
+    name: String,
+    extensionReceiver: KSTypeReference?,
+    params: List<KSValueParameter>
+): Boolean {
+    return declaration.getAllFunctions().any { func ->
+        if (func.simpleName.asString() != name) {
+            return@any false
+        }
+
+        val funcReceiver = func.extensionReceiver
+        if (funcReceiver != extensionReceiver) return@any false
+        val funParams = func.parameters
+        if (funParams.size != params.size) return@any false
+
+        for ((index, funParam) in funParams.withIndex()) {
+            val param = params[index]
+            if (param.type == funParam.type) continue
+
+            val funParamClassDecl = funParam.type.resolve().resolveClassDeclaration()
+            val paramClassDecl = param.type.resolve().resolveClassDeclaration()
+
+            // skip.
+            if (funParamClassDecl == null || paramClassDecl == null) return false
+        }
+
+        return true
+    }
 }
