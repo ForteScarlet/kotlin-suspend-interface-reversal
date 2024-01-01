@@ -1,6 +1,5 @@
 package love.forte.suspendreversal.processor
 
-import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.Modifier
@@ -15,7 +14,6 @@ private val JvmSyntheticClassName = ClassName("kotlin.jvm", "JvmSynthetic")
 
 internal fun resolveJvm(
     environment: SymbolProcessorEnvironment,
-    resolver: Resolver,
     symbol: AnnotationAndClassDeclaration,
     fileBuilder: FileSpec.Builder,
     typeParameterResolver: TypeParameterResolver,
@@ -134,7 +132,7 @@ private fun generateBlockingFunctions(
             addParameters(parameters)
 
             // @JvmSynthetic if need
-            if (annotationInfo.nearestAnnotation.markJvmSyntheticInOverriddenSuspendFunction) {
+            if (annotationInfo.nearestAnnotation.markJvmSynthetic) {
                 addAnnotation(JvmSyntheticClassName)
             }
 
@@ -224,7 +222,7 @@ private fun generateAsyncFunctions(
             addParameters(parameters)
 
             // @JvmSynthetic if need
-            if (annotationInfo.nearestAnnotation.markJvmSyntheticInOverriddenSuspendFunction) {
+            if (annotationInfo.nearestAnnotation.markJvmSynthetic) {
                 addAnnotation(JvmSyntheticClassName)
             }
 

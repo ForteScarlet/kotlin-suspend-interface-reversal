@@ -1,0 +1,15 @@
+[versions]
+ksp = "1.9.21-1.0.15"
+# https://square.github.io/kotlinpoet/
+kotlinPoet = "1.15.3"
+
+
+[libraries]
+ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+# https://square.github.io/kotlinpoet/interop-ksp/
+kotlinPoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinPoet" }
+
+[plugins]
+dokka = { id = "org.jetbrains.dokka" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+

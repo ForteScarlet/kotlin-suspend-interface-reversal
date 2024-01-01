@@ -139,7 +139,6 @@ internal class SuspendInterfaceReversalProcessor(private val environment: Symbol
                 isJvm -> {
                     resolveJvm(
                         environment,
-                        resolver,
                         symbol,
                         fileBuilder.builder,
                         typeParameterResolver,
@@ -150,7 +149,6 @@ internal class SuspendInterfaceReversalProcessor(private val environment: Symbol
                 isJs -> {
                     resolveJs(
                         environment,
-                        resolver,
                         symbol,
                         fileBuilder.builder,
                         typeParameterResolver,

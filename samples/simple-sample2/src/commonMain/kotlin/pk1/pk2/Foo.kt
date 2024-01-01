@@ -4,7 +4,7 @@ import love.forte.suspendreversal.annotations.SuspendReversal
 import kotlin.Throws
 import kotlin.jvm.JvmSynthetic
 
-@SuspendReversal(markJvmSyntheticInOverriddenSuspendFunction = false)
+@SuspendReversal(markJvmSynthetic = false)
 annotation class MyReversal
 
 @SuspendReversal

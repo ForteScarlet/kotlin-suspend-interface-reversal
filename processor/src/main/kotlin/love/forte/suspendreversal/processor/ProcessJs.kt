@@ -1,6 +1,5 @@
 package love.forte.suspendreversal.processor
 
-import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.Modifier
@@ -15,7 +14,6 @@ private val NullableUnitClassName = UNIT.copy(nullable = true)
 
 internal fun resolveJs(
     environment: SymbolProcessorEnvironment,
-    resolver: Resolver,
     symbol: AnnotationAndClassDeclaration,
     fileBuilder: FileSpec.Builder,
     typeParameterResolver: TypeParameterResolver,

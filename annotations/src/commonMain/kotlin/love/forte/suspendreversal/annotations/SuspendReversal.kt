@@ -10,6 +10,6 @@ public annotation class SuspendReversal(
     val javaBlocking: Boolean = true,
     val javaAsync: Boolean = true,
     val jsAsync: Boolean = true,
-    val markJvmSyntheticInOverriddenSuspendFunction: Boolean = true,
+    val markJvmSynthetic: Boolean = true,
     // todo more options..?
 )

@@ -4,9 +4,6 @@ import love.forte.suspendreversal.annotations.SuspendReversal
 import java.io.IOException
 import kotlin.jvm.Throws
 
-@SuspendReversal(markJvmSyntheticInOverriddenSuspendFunction = false)
-annotation class MyReversal
-
 @SuspendReversal
 interface Foo {
     val age: Int get() = 5
@@ -14,7 +11,7 @@ interface Foo {
     @JvmSynthetic
     suspend fun run()
     @JvmSynthetic
-    suspend fun get(): String
+    suspend fun get(): Int
 
     val name: String
 }
