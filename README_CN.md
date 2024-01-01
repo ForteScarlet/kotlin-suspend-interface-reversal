@@ -189,10 +189,37 @@ interface JBlockingFoo : Foo {
 
 > [!warning]
 > 这种判断很粗糙，不是很可靠。
-> 例如，它不会确定它是否是 `final`、参数是否具有继承关系，等等。
+> 例如，它不会判断它是否是 `final`、参数是否具有继承关系，等等。
 
 
 ## 友情链接
 
 [Kotlin suspend transform compiler plugin](https://github.com/ForteScarlet/kotlin-suspend-transform-compiler-plugin)
 : 用于为Kotlin挂起函数自动生成平台兼容函数的Kotlin编译器插件。
+
+
+## 开源协议
+
+参考 [LICENSE](LICENSE) .
+
+```text
+Copyright (c) 2024 ForteScarlet
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
