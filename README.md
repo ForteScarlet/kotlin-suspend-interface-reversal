@@ -162,7 +162,7 @@ interface Foo {
 
 1. The processor will only handle the **abstract suspend** function.
 
-2. In Java, functions with a return value of `Unit` are treated as `CompletableFuture<Void?>`
+2. In Java, functions with a return value of `Unit` are treated as `CompletableFuture<Void?>` (for async)
 
 3. Will copy the annotations `@kotlin.Throws` and `@kotlin.jvm.Throws`.
 
@@ -187,3 +187,4 @@ interface JBlockingFoo : Foo {
 
 > [!warning]
 > The judgment is very rough and not very reliable.
+> For example, it won't determine if it's `final` or not, if the parameters are inherited or not, and so on.
