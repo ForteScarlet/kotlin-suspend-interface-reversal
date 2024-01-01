@@ -1,5 +1,7 @@
 # Kotlin Suspend Interface reversal
 
+English | [中文](README_CN.md)
+
 Generate platform-compatible extension types for interfaces or abstract classes that contain suspend functions, based on KSP.
 
 ## Summary
@@ -188,3 +190,9 @@ interface JBlockingFoo : Foo {
 > [!warning]
 > The judgment is very rough and not very reliable.
 > For example, it won't determine if it's `final` or not, if the parameters are inherited or not, and so on.
+
+
+## Useful Links
+
+[Kotlin suspend transform compiler plugin](https://github.com/ForteScarlet/kotlin-suspend-transform-compiler-plugin)
+: Kotlin compiler plugin for converting suspend functions to platform-compatible functions.
