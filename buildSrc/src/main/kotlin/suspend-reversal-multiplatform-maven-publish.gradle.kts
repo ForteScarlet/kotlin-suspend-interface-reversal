@@ -36,8 +36,8 @@ multiplatformConfigPublishing {
     snapshotRepository = SnapshotRepository
     gpg = Gpg.ofSystemPropOrNull()
 
-    if (systemProp("SIMBOT_LOCAL").toBoolean()) {
-        logger.info("Is 'SIMBOT_LOCAL', mainHost set as null")
+    if (systemProp("IS_LOCAL").toBoolean()) {
+        logger.info("Is 'IS_LOCAL', mainHost set as null")
         mainHost = null
     }
 
