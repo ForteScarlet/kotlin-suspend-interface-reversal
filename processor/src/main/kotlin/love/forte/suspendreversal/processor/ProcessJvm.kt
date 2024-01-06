@@ -25,9 +25,9 @@ internal fun resolveJvm(
         superClassName = superClassName,
         environment = environment,
         symbol = symbol,
-        isEnabled = nearestAnnotation.jBlocking,
-        classNamePrefix = nearestAnnotation.jBlockingClassNamePrefix,
-        classNameSuffix = nearestAnnotation.jBlockingClassNameSuffix
+        isEnabled = nearestAnnotation.jBlock,
+        classNamePrefix = nearestAnnotation.jBlockClassNamePrefix,
+        classNameSuffix = nearestAnnotation.jBlockClassNameSuffix
     )
 
     val asyncTypeBuilder: TypeSpec.Builder? = generateReversalTypeSpecBuilder(

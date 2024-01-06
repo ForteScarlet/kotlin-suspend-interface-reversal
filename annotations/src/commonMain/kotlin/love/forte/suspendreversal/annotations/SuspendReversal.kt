@@ -7,9 +7,9 @@ package love.forte.suspendreversal.annotations
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
 public annotation class SuspendReversal(
-    val jBlocking: Boolean = true,
-    val jBlockingClassNamePrefix: String = "JBlocking",
-    val jBlockingClassNameSuffix: String = "",
+    val jBlock: Boolean = true,
+    val jBlockClassNamePrefix: String = "JBlock",
+    val jBlockClassNameSuffix: String = "",
     val jAsync: Boolean = true,
     val jAsyncClassNamePrefix: String = "JAsync",
     val jAsyncClassNameSuffix: String = "",
