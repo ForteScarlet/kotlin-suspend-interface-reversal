@@ -20,7 +20,7 @@ object P : ProjectDetail() {
     override val homepage: String
         get() = HOMEPAGE
 
-    override val version: Version = with(version(0, 1, 0)) {
+    override val version: Version = with(version(0, 2, 0)) {
         if (isSnapshot) this - Version.SNAPSHOT else this
     }
 
