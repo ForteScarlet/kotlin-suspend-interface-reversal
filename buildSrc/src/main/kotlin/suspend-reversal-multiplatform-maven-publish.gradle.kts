@@ -41,8 +41,8 @@ multiplatformConfigPublishing {
         mainHost = null
     }
 
-    publicationsFromMainHost += setOf("wasm", "wasm32", "wasm_js")
-    mainHostSupportedTargets += setOf("wasm", "wasm32", "wasm_js")
+    publicationsFromMainHost += listOf("wasm", "wasm32", "wasm_js")
+    mainHostSupportedTargets += listOf("wasm", "wasm32", "wasm_js")
 }
 
 
